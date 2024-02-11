@@ -24,13 +24,14 @@ const initializeDbAndServer = async () => {
 }
 initializeDbAndServer()
 const hasPriorityAndStatusProperties = requestQuery => {
-  return requestQuery.priority != undefined && requestQuery.status != undefined
+  return requestQuery.priority !== undefined && requestQuery.status != undefined
 }
+
 const hasPriorityProperty = requestQuery => {
-  return requestQuery.priority != undefined
+  return requestQuery.priority !== undefined
 }
 const hasStatusProperty = requestQuery => {
-  return requestQuery.status != undefined
+  return requestQuery.status !== undefined
 }
 app.get('/todos/', async (request, response) => {
   let data = null
@@ -45,7 +46,7 @@ app.get('/todos/', async (request, response) => {
         FROM todo
         WHERE todo LIKE '%${search_q}%'
         AND status='${status}'
-        AND priority='${priority};'`
+        AND priority='${priority}';`
       break
     case hasPriorityProperty(request.query):
       getTodosQuery = `
@@ -88,29 +89,29 @@ app.post('/todos/', async (request, response) => {
   const postTodoQuery = `
     INSERT INTO
     todo (id,todo,priority,status)
-    Values
-    (
-    (${id},'${todo}','${priority}','${status}');`
+    VALUES
+    
+    (${id},'${todo}','${priority}','${status}')`
   await database.run(postTodoQuery)
   response.send('Todo Successfully Added')
 })
 app.put('/todos/:todoId/', async (request, response) => {
   const {todoId} = request.params
-  let updateColumn = ''
+  let updateColumn = ' '
   const requestBody = request.body
   switch (true) {
-    case requestBody.status != undefined:
+    case requestBody.status !== undefined:
       updateColumn = 'Status'
       break
-    case requestBody.priority != undefined:
+    case requestBody.priority !== undefined:
       updateColumn = 'Priority'
       break
-    case requestBody.todo != undefined:
+    case requestBody.todo !== undefined:
       updateColumn = 'Todo'
       break
   }
   const previousTodoQuery = `
-    SELECT*
+    SELECT *
     FROM todo
     WHERE id=${todoId};`
   const previousTodo = await database.get(previousTodoQuery)
@@ -130,7 +131,7 @@ app.put('/todos/:todoId/', async (request, response) => {
   await database.run(updateTodoQuery)
   response.send(`${updateColumn} Updated`)
 })
-app.delete('/todos/:todoId', async (request, response) => {
+app.delete('/todos/:todoId/', async (request, response) => {
   const {todoId} = request.params
   const deleteTodoQuery = `
     DELETE FROM
@@ -140,3 +141,4 @@ app.delete('/todos/:todoId', async (request, response) => {
   response.send('Todo Deleted')
 })
 module.exports = app
+
